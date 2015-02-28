@@ -127,7 +127,6 @@ function init()
 	container.appendChild( stats.domElement );
 	// LIGHT
 	var light = new THREE.PointLight(0xffffff);
-	light.position.set(100,250,100);
 	scene.add(light);
 	// SKYBOX
 	var skyBoxGeometry = new THREE.CubeGeometry( 1000, 1000, 1000 );
@@ -149,7 +148,7 @@ function init()
 	squareT.wrapS = squareT.wrapT = THREE.RepeatWrapping;
 	squareT.repeat.set(GRID_SIZE,GRID_SIZE);
 	this.planeGeo = new THREE.PlaneGeometry(GRID_SIZE,GRID_SIZE);
-	this.planeMat = new THREE.MeshBasicMaterial({map:squareT, color:0xbbbbbb});
+	this.planeMat = new THREE.MeshBasicMaterial({map:squareT, color:0x009900});
 	this.basePlane = new THREE.Mesh(planeGeo, planeMat);
 	basePlane.rotation.x = -Math.PI / 2;
 	basePlane.position.set(GRID_SIZE/2,0,GRID_SIZE/2);
@@ -303,7 +302,7 @@ function update()
 	brush.material = materials["add"][ brush.colorIndex ];
 
 	// brush modes
-	if ( keyboard.down("Z") )
+	if ( keyboard.down("W") )
 		brush.mode = "add";
 	if ( keyboard.down("X") )
 		brush.mode = "select";
