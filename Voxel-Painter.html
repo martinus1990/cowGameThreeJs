@@ -189,6 +189,22 @@ function init()
 	scene.add( brush );
 
 	this.cubeNames = [];
+
+	for(var x = 0; x < GRID_SIZE; x++){
+		for(var z = 0; z< GRID_SIZE; z++){
+
+			var genPosition = new THREE.Vector3( x, 0, z);
+			var scenePos = genPosition.clone().add( new THREE.Vector3(0.5, 0.5, 0.5) );
+
+			var cube = new THREE.Mesh( cubeGeo );
+			cube.material = materials["solid"][ brush.colorIndex ];
+			cube.position = scenePos.clone();
+			cube.name = "X" + genPosition.x + "Y" + genPosition.y + "Z" + genPosition.z;	
+			cube.colorIndex = 1;
+			scene.add( cube );
+			cubeNames.push( cube.name );
+		}
+	}
 	
 	this.projector = new THREE.Projector();
 	this.mouse2D = new THREE.Vector3( 0, 0, 0.5 );
