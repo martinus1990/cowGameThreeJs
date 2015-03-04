@@ -6163,6 +6163,11 @@ THREE.Math = {
 		return range * ( 0.5 - Math.random() );
 
 	},
+    isPowerOfTwo: function ( value ) {
+
+    return ( value & ( value - 1 ) ) === 0;
+
+    },
 
 	sign: function ( x ) {
 
