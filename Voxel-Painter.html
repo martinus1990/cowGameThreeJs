@@ -143,8 +143,7 @@ function init()
 	axis.position.y = 0.01;
 	scene.add(axis);
 
-	var GRID_SIZE = 10;
-	
+
 	var squareT = new THREE.ImageUtils.loadTexture("images/square-thick.png");
 	squareT.wrapS = squareT.wrapT = THREE.RepeatWrapping;
 	squareT.repeat.set(GRID_SIZE,GRID_SIZE);
@@ -168,22 +167,19 @@ function init()
 		new THREE.Vector3(0,1,0), new THREE.Vector3(0,-1,0),
 		new THREE.Vector3(0,0,1), new THREE.Vector3(0,0,-1) ];
 		
-	this.colors = [ new THREE.Color(0x66FFFF), new THREE.Color(0xff0000), new THREE.Color(0xff8800), new THREE.Color(0xffff00), new THREE.Color(0x00cc00),
-	                new THREE.Color(0x0000ff), new THREE.Color(0x8800ff), new THREE.Color(0x804000), new THREE.Color(0x222222), new THREE.Color(0xFF66FF) ];	
+	this.colors = [ new THREE.Color(0x66FFFF), new THREE.Color(0xffffff)];
 
-	this.materials = { "solid":[], "add":[], "delete":[], "color":[] };
+	this.materials = { "solid":[], "select":[]};
 	for (var i = 0; i < colors.length; i++)
 	{
 		materials["solid"][i]   = new THREE.MeshBasicMaterial( {map: squareTexture,     color: colors[i]} );
-		materials["add"][i]     = new THREE.MeshBasicMaterial( {map: squareTexturePlus, color: colors[i], transparent:true, opacity:0.75} );
-		materials["delete"][i]  = new THREE.MeshBasicMaterial( {map: squareTextureX,    color: colors[i], transparent:true, opacity:0.75} );
-		materials["color"][i]   = new THREE.MeshBasicMaterial( {map: squareTextureO,    color: colors[i], transparent:true, opacity:0.75} );
+		materials["select"][i]     = new THREE.MeshBasicMaterial( {map: squareTexturePlus, color: colors[i], transparent:true, opacity:0.75} );
 	}
 
-	this.brush = new THREE.Mesh( cubeGeo.clone(), materials["add"][1] );	
+	this.brush = new THREE.Mesh( cubeGeo.clone(), materials["solid"][1] );
 	brush.ignore = true;    // ignored by raycaster
 	brush.visible = false;	
-	brush.mode = "add";
+	brush.mode = "select";
 	brush.colorIndex = 1;
 
 	scene.add( brush );
@@ -229,25 +225,23 @@ function mouseClick( event )
 
 function brushAction()
 {
-	if (brush.mode == "add" && brush.visible)
-	{
-		var cube = new THREE.Mesh( cubeGeo );
-		cube.material = materials["solid"][ brush.colorIndex ];
-		cube.position = brush.position.clone();
-		cube.name = brush.addName;
-		cube.colorIndex = brush.colorIndex;
-		scene.add( cube );
-		cubeNames.push( cube.name );
-	}
-	
+		
 	if (brush.mode == "select")
 	{
-		var cube = scene.getObjectByName( brush.targetName );
 
-		var intPosition = new THREE.Vector3( Math.floor(cube.position.x), 
-				Math.floor(cube.position.y), Math.floor(cube.position.z) );
+		var cube = scene.getObjectByName( brush.targetName );
+		if (cube)
+		{
+			cube.material = materials["solid"][ 0];
+			cube.colorIndex = 0;
+
+			var intPosition = new THREE.Vector3( Math.floor(cube.position.x),
+					Math.floor(cube.position.y), Math.floor(cube.position.z) );
+
+			alert("Name = " + cube.name + "\nPosition = X: " + intPosition.x + " Y: " + intPosition.y + " Z: " + intPosition.z);
+		}
+
 		
-		alert("Name = " + cube.name + "\nPosition = X: " + intPosition.x + " Y: " + intPosition.y + " Z: " + intPosition.z);
 	}
 }
 
@@ -312,19 +306,9 @@ function update()
 	// voxel painting controls
 	
 	// when digit is pressed, change brush color data
-	for (var i = 0; i < 10; i++)
-	if ( keyboard.down( i.toString() ) ) 
-		brush.colorIndex = i;
-	
-	brush.material = materials["add"][ brush.colorIndex ];
 
-	// brush modes
-	if ( keyboard.down("W") )
-		brush.mode = "add";
-	if ( keyboard.down("X") )
-		brush.mode = "select";
-	if ( keyboard.down("C") )
-		brush.mode = "color";
+	brush.material = materials["select"][ brush.colorIndex ];
+
 
 	// perform brush action
 	if ( keyboard.down("V") )
@@ -356,15 +340,6 @@ function update()
 		
 	if ( result )
 	{	
-		if ( (brush.mode == "add") && result.object.base ) // place cube on basePlane
-		{
-			brush.visible = true;
-			var intPosition = new THREE.Vector3( Math.floor(result.point.x), 0, Math.floor(result.point.z) );
-			brush.position = intPosition.clone().add( new THREE.Vector3(0.5, 0.5, 0.5) );
-			brush.addName = "X" + intPosition.x + "Y" + intPosition.y + "Z" + intPosition.z;	
-		}
-	
-
 		if ( (brush.mode == "select") && !result.object.base ) // delete cube
 		{
 			brush.visible = false;
@@ -372,7 +347,7 @@ function update()
 				Math.floor(result.object.position.y), Math.floor(result.object.position.z) );
 			brush.targetName = "X" + intPosition.x + "Y" + intPosition.y + "Z" + intPosition.z;	
 			var targetCube = scene.getObjectByName( brush.targetName );
-			targetCube.material = materials["delete"][ targetCube.colorIndex ];
+			targetCube.material = materials["select"][ targetCube.colorIndex ];
 		}
 
 	}
