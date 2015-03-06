@@ -87,7 +87,7 @@ function viewSet(n)
 	}
 	if (n == 2) // birds-eye view
 	{
-		person.position.set(0, 4 * GRID_SIZE, GRID_SIZE/2);
+		person.position.set(GRID_SIZE, 2*GRID_SIZE, GRID_SIZE);
 		person.rotation.set(0, -Math.PI / 2.0, 0); 
 		camera.rotation.set(-1.48, 0, 0); 
 	}
@@ -136,8 +136,9 @@ function init()
 	setLight();
 	
 	// SKYBOX
+	var cgiLogo = new THREE.ImageUtils.loadTexture("images/cgi-logo.png");
 	var skyBoxGeometry = new THREE.CubeGeometry( 1000, 1000, 1000 );
-	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide } );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { map:cgiLogo ,color: 0xffffee, side: THREE.BackSide } );
 	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
 	scene.add(skyBox);
 
@@ -178,7 +179,7 @@ function init()
 	this.materials = { "solid":[], "select":[]};
 	for (var i = 0; i < colors.length; i++)
 	{
-		materials["solid"][i]   = new THREE.MeshBasicMaterial( {map: squareTexture,     color: colors[i]} );
+		materials["solid"][i]   = new THREE.MeshBasicMaterial( {map: squareTexture, color: colors[i]});
 		materials["select"][i]     = new THREE.MeshBasicMaterial( {map: squareTexturePlus, color: colors[i]} );
 	}
 
